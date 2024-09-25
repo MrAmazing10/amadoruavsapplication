@@ -1,2 +1,23 @@
-//import libraries
+# importing libraries
+import numpy
+import sci-kit-learn
+import pandas
+import matplotlib
+import geopandas
+
+#open file
+def create_list():
+    with open("no_outliers.txt","r") as no_outliers:
+        # initialize empty list
+        points = []
+        for i, line in enumerate(no_outliers):
+            # do not use line 1 as a pt.
+            if i == 0:
+                #line 1 --> number of total points
+                num = line
+            # start reading for actual points in lines after 1
+            lat,long = line.split()
+            points.append(lat, long)
+
+
 
