@@ -22,5 +22,11 @@ def create_list(points):
                 # For debugging
                 print(f"lat: {lat}, long: {long}")
 
-create_list(points) 
-print("points:",points)
+#create_list(points) 
+#print("points:",points)
+def plot(points):
+     df = pd.read_csv("no_outliers.txt")
+     lat_long = df[["latitude","longitude"]]
+     lat, long = df.latitude, df.longitude
+     plt.scatter(long,lat)
+plot(points)
