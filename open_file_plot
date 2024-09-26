@@ -1,23 +1,26 @@
-# importing libraries
-import numpy
-import sci-kit-learn
-import pandas
-import matplotlib
-import geopandas
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import geopandas as gpd
 
+# initialize global empty list
+points = []
 #open file
-def create_list():
+def create_list(points):
     with open("no_outliers.txt","r") as no_outliers:
-        # initialize empty list
-        points = []
+
         for i, line in enumerate(no_outliers):
-            # do not use line 1 as a pt.
-            if i == 0:
-                #line 1 --> number of total points
-                num = line
-            # start reading for actual points in lines after 1
-            lat,long = line.split()
-            points.append(lat, long)
+                
+                if i == 0:
+                     continue
+                
+                values = line.strip()
+                #split into lat + long then add to 2d list
+                lat, long = values.split()
+                points.append([float(lat), float(long)])
+                
+                # For debugging
+                print(f"lat: {lat}, long: {long}")
 
-
-
+create_list(points) 
+print("points:",points)
