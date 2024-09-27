@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import geopandas as gpd
+#import geopandas as gpd
+from sklearn import metrics
+from sklearn.cluster import DBSCAN
 
 # initialize global empty list
 points = []
@@ -9,24 +11,32 @@ points = []
 def create_list(points):
     with open("no_outliers.txt","r") as no_outliers:
 
-        for i, line in enumerate(no_outliers):
+     for i, line in enumerate(no_outliers):
+                    
+          if i == 0:
+                continue
+          
+          values = line.strip()
+          #split into lat + long then add to 2d list
+          lat, long = values.split()
+          points.append([float(lat), float(long)])
                 
-                if i == 0:
-                     continue
-                
-                values = line.strip()
-                #split into lat + long then add to 2d list
-                lat, long = values.split()
-                points.append([float(lat), float(long)])
-                
-                # For debugging
-                print(f"lat: {lat}, long: {long}")
+               # For debugging
+          print(f"lat: {lat}, long: {long}")
+     return points
 
 #create_list(points) 
 #print("points:",points)
 def plot(points):
-     df = pd.read_csv("no_outliers.txt")
-     lat_long = df[["latitude","longitude"]]
-     lat, long = df.latitude, df.longitude
-     plt.scatter(long,lat)
+     db = DBSCAN(eps=0.0038, min_samples=15).fit(points)
+     labels = db.labels_
+
+     # Number of clusters in labels, ignoring noise if present.
+     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+     n_noise_ = list(labels).count(-1)
+
+     print("Estimated number of clusters: %d" % n_clusters_)
+     print("Estimated number of noise points: %d" % n_noise_)
+points = create_list(points)
 plot(points)
+
