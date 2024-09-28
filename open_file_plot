@@ -9,15 +9,15 @@ from sklearn.cluster import DBSCAN
 def main():
      points = [] # initialize global empty list
      points = create_list(points)
-     cluster(points)
      centroids = findcentroids(points, cluster(points)[-1])
+     plot(points)
      with open("centers.txt","w") as f:
-         for centroid in centroids():
+         for centroid in centroids:
              f.write(f"{centroid}\n")
              f.close
 
 def create_list(points):
-    with open("no_outliers.txt","r") as file:#open file read
+    with open("with outliers.txt","r") as file:#open file read
 
      for i, line in enumerate(file):
           #excludes line 1       
@@ -34,9 +34,9 @@ def create_list(points):
 
 def cluster(points):
      
-     db = DBSCAN(eps=.0001, min_samples=50).fit(points) #finds clusters with radius of .0001 around each point to find others, with minimum amt of samples in this process being 50(has to find 49 others total)
+     db = DBSCAN(eps=.0000755, min_samples=50).fit(points) #finds clusters with radius of .0001 around each point to find others, with minimum amt of samples in this process being 50(has to find 49 others total)
      labels = db.labels_
-     print(f"labels:{labels}")
+     #print(f"labels:{labels}")
 
      
      n_clusters = len(set(labels)) - (1 if -1 in labels else 0) # Number of clusters in labels, ignoring noise if present.(exactly as from dbscan docs)
@@ -56,14 +56,26 @@ def plot(points):
 #plot(points)
 
 def findcentroids(points,labels):
-     sortedclusterpts = [] #creating 5 different lists(values will also be lists) where the clusters' respective points will go
+     sortedclusterpts = [[],[],[],[],[]] #creating 5 different lists. values inside the list will also be lists, where the clusters' respective points will go
      centroids = [] #creating list for all centroids to go in
-     for i in range(len(points)):
-          label = labels[i]
-          if 0 <= label < 5 and label.is_integer() == True:  #checks if labels are within range just in case it's not
-              sortedclusterpts[label].append(points[i])
-     for i in sortedclusterpts:
-          centroids.append(str(np.average(sortedclusterpts[i][0])) + str(np.average(sortedclusterpts[i][0]))) # calculating avg of each for lat and long, and adding them to a list of centroids
+     for i in range(len(labels)):
+          if labels[i] == -1:
+               continue
+          elif labels[i] == 0:
+               sortedclusterpts[0].append(points[i])     
+          elif labels[i] == 1:
+               sortedclusterpts[1].append(points[i])
+          elif labels[i] == 2:
+               sortedclusterpts[2].append(points[i])
+          elif labels[i] == 3:
+               sortedclusterpts[3].append(points[i])
+          elif labels[i] == 4:
+               sortedclusterpts[4].append(points[i])
+          #print(f"\ncluster0:{sortedclusterpts[0]}")
+          
+     for i in range(len(sortedclusterpts)):
+          centroids.append([np.mean(sortedclusterpts[i][0][0]),  np.mean(sortedclusterpts[i][0][1])]) # calculating avg of each for lat and long, and adding them to a list of centroids
+     print(f"\ncentroids:{centroids}")
      return centroids
 
 
