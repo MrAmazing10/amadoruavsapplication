@@ -9,10 +9,10 @@ from sklearn.cluster import DBSCAN
 points = []
 #open file
 def create_list(points):
-    with open("no_outliers.txt","r") as no_outliers:
+    with open("no_outliers.txt","r") as file:
 
-     for i, line in enumerate(no_outliers):
-                    
+     for i, line in enumerate(file):
+          #excludes line 1       
           if i == 0:
                 continue
           
@@ -22,20 +22,21 @@ def create_list(points):
           points.append([float(lat), float(long)])
 
      return points
+#runs function
 points = create_list(points)
 
-points = create_list(points) 
-#print("points:",points)
 def cluster(points):
-     db = DBSCAN(eps=.0001, min_samples=5).fit(points)
+     #finds clusters with radius of .0001 around each point to find others, with minimum amt of samples in this process being 50(has to find 49 others total)
+     db = DBSCAN(eps=.0001, min_samples=50).fit(points)
      labels = db.labels_
+     print(labels)
 
-     # Number of clusters in labels, ignoring noise if present.
+     # Number of clusters in labels, ignoring noise if present.(exactly as from dbscan docs)
      n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
      n_noise_ = list(labels).count(-1)
-
      print("Estimated number of clusters: %d" % n_clusters_)
      print("Estimated number of noise points: %d" % n_noise_)
+     return labels
 
 cluster(points)
 def plot(points):
@@ -44,9 +45,13 @@ def plot(points):
     y = [j[1] for j in points]
     #creates plot
     df = plt.scatter(x, y)
-    """lat_long = df[["latitude","longitude"]]
-    lat, long = df.latitude, df.longitude
-    plt.scatter(long,lat)"""
     #saves as file for me to view
     plt.savefig('scatter_plot.png')
 plot(points)
+
+def centroid(points):
+     cluster0_pts = []
+     for i in range(len(points)):
+         if labels[i] == 0:
+             cluster0_pts.append(points[i])
+     print(f"points in c1:{cluster0_pts}") 
