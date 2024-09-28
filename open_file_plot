@@ -32,11 +32,11 @@ def cluster(points):
      print(labels)
 
      # Number of clusters in labels, ignoring noise if present.(exactly as from dbscan docs)
-     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-     n_noise_ = list(labels).count(-1)
-     print("Estimated number of clusters: %d" % n_clusters_)
-     print("Estimated number of noise points: %d" % n_noise_)
-     return labels
+     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+     n_noise = list(labels).count(-1)
+     print("Estimated number of clusters: %d" % n_clusters)
+     print("Estimated number of noise points: %d" % n_noise)
+     return n_clusters,n_noise,labels
 
 cluster(points)
 def plot(points):
@@ -49,9 +49,18 @@ def plot(points):
     plt.savefig('scatter_plot.png')
 plot(points)
 
-def centroid(points):
-     cluster0_pts = []
+def centroid(points,labels):
+     #creating 5 different lists where the clusters' respective points will go
+     clusterpts_0, clusterpts_1, clusterpts_2, clusterpts_3, clusterpts_4 = [], [], [], [], []
      for i in range(len(points)):
-         if labels[i] == 0:
-             cluster0_pts.append(points[i])
-     print(f"points in c1:{cluster0_pts}") 
+          if labels[i] == 0:
+               clusterpts_0.append(points[i])
+          elif labels[i] == 1:
+               clusterpts_1.append(points[i])
+          elif labels[i] == 2:
+               clusterpts_2.append(points[i])
+          elif labels[i] == 3:
+               clusterpts_3.append(points[i])
+          elif labels[i] == 4:
+               clusterpts_4.append(points[i])
+     
