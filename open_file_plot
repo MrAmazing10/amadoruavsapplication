@@ -40,27 +40,21 @@ def cluster(points):
 
 cluster(points)
 def plot(points):
-    #sets x and y -values
-    x = [i[0] for i in points]
-    y = [j[1] for j in points]
+    
+    x = [i[0] for i in points] #sets x-values
+    y = [j[1] for j in points] #sets y-values
     #creates plot
     df = plt.scatter(x, y)
-    #saves as file for me to view
-    plt.savefig('scatter_plot.png')
+    plt.savefig('scatter_plot.png') #saves as file for me to view
 plot(points)
 
-def centroid(points,labels):
-     #creating 5 different lists where the clusters' respective points will go
-     clusterpts_0, clusterpts_1, clusterpts_2, clusterpts_3, clusterpts_4 = [], [], [], [], []
+def centroids(points,labels):
+     sortedclusterpts = [] #creating 5 different lists(values will also be lists) where the clusters' respective points will go
+     centroids = [] #creating list for all centroids to go in
      for i in range(len(points)):
-          if labels[i] == 0:
-               clusterpts_0.append(points[i])
-          elif labels[i] == 1:
-               clusterpts_1.append(points[i])
-          elif labels[i] == 2:
-               clusterpts_2.append(points[i])
-          elif labels[i] == 3:
-               clusterpts_3.append(points[i])
-          elif labels[i] == 4:
-               clusterpts_4.append(points[i])
-     
+          label = labels[i]
+          if 0 <= label < 5 and label.isinteger() == True:  #checks if labels are within range just in case it's not
+              sortedclusterpts[label].append(points[i])
+     for i in sortedclusterpts:
+          centroids.append(str(np.average(sortedclusterpts[i][0])) + str(np.average(sortedclusterpts[i][0]))) # calculating avg of each for lat and long, and adding them to a list of centroids
+     return centroids
