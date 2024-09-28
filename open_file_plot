@@ -5,11 +5,19 @@ import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn.cluster import DBSCAN
 
-# initialize global empty list
-points = []
-#open file
+
+def main():
+     points = [] # initialize global empty list
+     points = create_list(points)
+     cluster(points)
+     centroids = findcentroids(points, cluster(points)[-1])
+     with open("centers.txt","w") as f:
+         for centroid in centroids():
+             f.write(f"{centroid}\n")
+             f.close
+
 def create_list(points):
-    with open("no_outliers.txt","r") as file:
+    with open("no_outliers.txt","r") as file:#open file read
 
      for i, line in enumerate(file):
           #excludes line 1       
@@ -17,28 +25,27 @@ def create_list(points):
                 continue
           
           values = line.strip()
-          #split into lat + long then add to 2d list
-          lat, long = values.split()
+          
+          lat, long = values.split() #split into lat + long then adds to 2d list
           points.append([float(lat), float(long)])
 
-     return points
-#runs function
-points = create_list(points)
+     return points #runs function
+
 
 def cluster(points):
-     #finds clusters with radius of .0001 around each point to find others, with minimum amt of samples in this process being 50(has to find 49 others total)
-     db = DBSCAN(eps=.0001, min_samples=50).fit(points)
+     
+     db = DBSCAN(eps=.0001, min_samples=50).fit(points) #finds clusters with radius of .0001 around each point to find others, with minimum amt of samples in this process being 50(has to find 49 others total)
      labels = db.labels_
-     print(labels)
+     print(f"labels:{labels}")
 
-     # Number of clusters in labels, ignoring noise if present.(exactly as from dbscan docs)
-     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+     
+     n_clusters = len(set(labels)) - (1 if -1 in labels else 0) # Number of clusters in labels, ignoring noise if present.(exactly as from dbscan docs)
      n_noise = list(labels).count(-1)
-     print("Estimated number of clusters: %d" % n_clusters)
-     print("Estimated number of noise points: %d" % n_noise)
+     print(f"Estimated number of clusters: {n_clusters}")
+     print(f"Estimated number of noise points: {n_noise}")
      return n_clusters,n_noise,labels
 
-cluster(points)
+
 def plot(points):
     
     x = [i[0] for i in points] #sets x-values
@@ -46,15 +53,19 @@ def plot(points):
     #creates plot
     df = plt.scatter(x, y)
     plt.savefig('scatter_plot.png') #saves as file for me to view
-plot(points)
+#plot(points)
 
-def centroids(points,labels):
+def findcentroids(points,labels):
      sortedclusterpts = [] #creating 5 different lists(values will also be lists) where the clusters' respective points will go
      centroids = [] #creating list for all centroids to go in
      for i in range(len(points)):
           label = labels[i]
-          if 0 <= label < 5 and label.isinteger() == True:  #checks if labels are within range just in case it's not
+          if 0 <= label < 5 and label.is_integer() == True:  #checks if labels are within range just in case it's not
               sortedclusterpts[label].append(points[i])
      for i in sortedclusterpts:
           centroids.append(str(np.average(sortedclusterpts[i][0])) + str(np.average(sortedclusterpts[i][0]))) # calculating avg of each for lat and long, and adding them to a list of centroids
      return centroids
+
+
+if __name__ == "__main__":
+    main()
