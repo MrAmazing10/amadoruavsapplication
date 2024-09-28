@@ -20,15 +20,14 @@ def create_list(points):
           #split into lat + long then add to 2d list
           lat, long = values.split()
           points.append([float(lat), float(long)])
-                
-               # For debugging
-          print(f"lat: {lat}, long: {long}")
-     return points
 
-#create_list(points) 
+     return points
+points = create_list(points)
+
+points = create_list(points) 
 #print("points:",points)
-def plot(points):
-     db = DBSCAN(eps=0.0038, min_samples=15).fit(points)
+"""def cluster(points):
+     db = DBSCAN(eps=.0038, min_samples=2).fit(points)
      labels = db.labels_
 
      # Number of clusters in labels, ignoring noise if present.
@@ -37,6 +36,17 @@ def plot(points):
 
      print("Estimated number of clusters: %d" % n_clusters_)
      print("Estimated number of noise points: %d" % n_noise_)
-points = create_list(points)
+"""
+#cluster(points)
+def plot(points):
+    #sets x and y -values
+    x = [i[0] for i in points]
+    y = [j[1] for j in points]
+    #creates plot
+    df = plt.scatter(x, y)
+    """lat_long = df[["latitude","longitude"]]
+    lat, long = df.latitude, df.longitude
+    plt.scatter(long,lat)"""
+    #saves as file for me to view
+    plt.savefig('scatter_plot.png')
 plot(points)
-
