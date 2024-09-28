@@ -26,8 +26,8 @@ points = create_list(points)
 
 points = create_list(points) 
 #print("points:",points)
-"""def cluster(points):
-     db = DBSCAN(eps=.0038, min_samples=2).fit(points)
+def cluster(points):
+     db = DBSCAN(eps=.0001, min_samples=5).fit(points)
      labels = db.labels_
 
      # Number of clusters in labels, ignoring noise if present.
@@ -36,8 +36,8 @@ points = create_list(points)
 
      print("Estimated number of clusters: %d" % n_clusters_)
      print("Estimated number of noise points: %d" % n_noise_)
-"""
-#cluster(points)
+
+cluster(points)
 def plot(points):
     #sets x and y -values
     x = [i[0] for i in points]
