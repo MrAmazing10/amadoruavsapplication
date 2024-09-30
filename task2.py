@@ -1,56 +1,43 @@
 import numpy as np
 import shapely as sh
+import shapely.ops as ops
 import json
 import matplotlib.pyplot as plt
 
 geopoints = []
 waypoints = [] # initialize global empty list of points
-def getpoints(geopoints,waypoints):
-    with open("navigate.txt","r") as file:
-        for i, line in enumerate(file):
-            if i == 0:
-                geofencenum, waypointnum = line.split() # splitting line to find each value
-                geofencenum = int(geofencenum)
-                waypointnum = int(waypointnum) # converting to int
-                continue
-            elif i <= geofencenum: # checking values of i to determine if it is within geofence or waypoint line ranges
-                for __ in range(geofencenum):
-                    values = line.strip()
-                    lat, long = values.split() # getting lat + long values from line and adding to 2d list
-                    geopoints.append([float(lat), float(long)])
-            elif i > geofencenum and i <= geofencenum + waypointnum:
-                for __ in range(waypointnum):
-                    values = line.strip()
-                    lat, long = values.split() # getting lat + long values from line and adding to 2d list
-                    waypoints.append([float(lat), float(long)])
-    return geopoints, waypoints
-
+def getpoints(geopoints, waypoints):
+   with open("navigate.txt", "r") as file:
+       for i, line in enumerate(file):
+           if i == 0:
+               geofencenum, waypointnum = map(int, line.split())  # Splitting the first line to get counts
+               continue
+           elif i <= geofencenum:  # Read geofence points
+               lat, lon = map(float, line.strip().split())  # Convert lat and lon to float
+               geopoints.append([lat, lon])
+           elif i > geofencenum and i <= geofencenum + waypointnum:  # Read waypoint points
+               lat, lon = map(float, line.strip().split())  # Convert lat and lon to float
+               waypoints.append([lat, lon])
+   return geopoints, waypoints
 
 def fitpath(geopoints, waypoints):
-   pathpoints = waypoints #currently duplicate of waypoints; will be changed with correct points after
-   geofence = sh.Polygon(geopoints) # creating geofence polygon
-   limit = geofence.buffer(25)
-   for i,waypoint in enumerate(waypoints):
-       point = sh.Point(waypoint) # creating point from waypoint
-       if not limit.contains(point): # checking if point is within 25 ft limit
-           pathpoint = sh.ops.nearest_points(point,limit)[1]
-           pathpoints[i] = [pathpoint.x,pathpoint.y]
-           xgeo,ygeo = geofence.exterior.xy
-           xpath,ypath = limit.exterior.xy
-           plt.figure()
-           plt.plot(xgeo,ygeo)
-           plt.plot(xpath,ypath)
-           waypoints_x, waypoints_y = zip(*waypoints)
-           pathpoints_x, pathpoints_y = zip(*pathpoints)
-           plt.scatter(waypoints_x, waypoints_y, color='blue')
-           plt.scatter(pathpoints_x, pathpoints_y, color='red')
-           plt.savefig('geofence_path_plot.png')
-           plt.show
-       else:
-           continue
-   return pathpoints
+    pathpoints = waypoints.copy() # creating copy of waypoints
+    geofence = sh.Polygon(geopoints) # creating geofence polygon
+    limit = geofence.buffer(-0.00000274) #create inside buffer of geofence of 25ft; converted from degrees to ft
+    
+    #assumes buffer list is not empty(if buffer value > geofence's, then it is empty)
+    
+    for i, waypoint in enumerate(waypoints): # adjusting waypoints if they are outside buffered geofence
+        point = sh.Point(waypoint)  # creating a point from waypoint
+        # checking if point is outside buffer
+        if not limit.contains(point):
+            # Find the nearest point on buffer and update pathpoints to match
+            pathpoint = ops.nearest_points(point, limit)[1]
+            pathpoints[i] = [pathpoint.x, pathpoint.y] #replaces old waypoint(waypoint) with new waypoint(pathpoint)
+    
+    return pathpoints # return adjusted pathpoints
+        #what I planned to add next if I was able to: potential next to add?: if line intersects buffered geofence, adjust points again, move both points along line inside until no longer intersecting buffer    
+# this line is used for testing output as I did not finish creating method for JSON output: print(f"path:{pathpoints}")
+
 geopoints, waypoints = getpoints(geopoints, waypoints)
 pathpoints = fitpath(geopoints,waypoints)
-
-
-
