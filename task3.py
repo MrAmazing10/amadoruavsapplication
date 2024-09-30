@@ -2,7 +2,6 @@ import PIL
 import ultralytics
 import numpy
 import random
-
 # opencv-python
 # did not finish, did not use ultralytics, numpy, opencv-python yet
 
@@ -60,38 +59,18 @@ colors_rgb = {
 angles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360]
 # chose unit circle angles for rotation of shapes
 
-"""img = PIL.Image.new("RGB", (1000,1000), "white")
-draw = PIL.ImageDraw.Draw(img)
-draw.rectangle((0,0,100,100), fill="red")
-
-img.show()"""
-
-"""def create_image():
-    for i in range(100,1000):
-        img = PIL.Image.new("RGB", i, i, "white")
-        draw = PIL.ImageDraw.Draw(img)
-        x1,y1,x2,y2 = map(j for j in range(50,i))
-        draw.rectangle((x1,y1,x2,y2), fill= (color for color in colors))
-        draw.pieslice((x1,y1,x2,y2), fill= (color for color in colors))
-        draw.circle((x1,y1,x2,y2), fill= (color for color in colors))
-        draw.triangle((x1,y1,x2,y2), fill= (color for color in colors))
-        draw.regular_polygon(((x1+x2)/2,(y1+y2)/2,3,rotation= (deg for deg in angles())), fill= (color for color in colors))
-        draw.text(((x1+x2)/2,(y1+y2)/2), (letter for letter in characters), fill= (color for color in colors))
-"""
-
-
-def create_image(shapes, characters, colors, angles):
-    for shape in shapes:
-        for letter in characters:
-            for angle in angles:
-                n = random.randint(100, 1000)
-                img = PIL.Image.new("RGB", (n, n), "white")
-                draw = PIL.ImageDraw.Draw(img)
+def create_image(shapes, characters, colors, angles): # function to generate
+    for shape in shapes: # all allowed shapes
+        for letter in characters: # all letters
+            for angle in angles: # all unit circle angles
+                n = random.randint(100, 1000) # used for random size
+                img = PIL.Image.new("RGB", (n, n), "white") # creates img, white background
+                draw = PIL.ImageDraw.Draw(img) # starts drawing on img
                 x1, y1, x2, y2 = (
                     random.randint(100, 900),
                     random.randint(100, 900),
                     random.randint(100, 900),
-                    random.randint(100, 900),
+                    random.randint(100, 900), # limited so model would be faster
                 )
                 # random values, condensed into 1 line instead of 4
                 random_color_key_shape = random.choice(list(colors.keys()))
@@ -168,14 +147,8 @@ def create_image(shapes, characters, colors, angles):
                     font_size=48,
                 )  # places text, size of text is chosen at 48 for now
                 new_img = img.rotate(angle)  # rotates image by angle
-                new_img.show()
-                return new_img
-                i = 1
-                i += 1
-                if i == 10:
-                    return new_img
-                else:
-                    continue
+                new_img.show() # shows image; return function placed after so it would not loop forever; starts with circle as that is first in list
+                return new_img  # returns the image
 
 
 create_image(
